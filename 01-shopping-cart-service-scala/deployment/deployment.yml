@@ -18,6 +18,9 @@ spec:
       containers:
       - name: cartapp
         image: ignasi35/shopping-cart-service-scala:latest
+        env:
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=kubernetes.conf"
         readinessProbe:
           httpGet:
             path: /ready

@@ -30,6 +30,7 @@ $ kubectl get services
 NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
 cart         LoadBalancer   10.110.38.135   <pending>     8080:32091/TCP,9090:30620/TCP   14m
 kubernetes   ClusterIP      10.96.0.1       <none>        443/TCP                         47m
+
 $ minikube service cart 
 |-----------|------|-----------------|-------------------------|
 | NAMESPACE | NAME |   TARGET PORT   |           URL           |
