@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8101
+    - name: management
+      port: 9090
+      targetPort: 9101
+  selector:
+    app: cartapp
+  type: LoadBalancer

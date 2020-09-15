@@ -1,5 +1,4 @@
 name := "shopping-cart-service-scala"
-version := "1.0"
 
 organization := "com.lightbend.akka.samples"
 organizationHomepage := Some(url("https://akka.io"))
@@ -37,34 +36,46 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-cluster-sharding-typed" % AkkaVersion,
   "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test,
   "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion % Test,
-
+  
   // Akka Management powers Health Checks and Akka Cluster Bootstrapping
   "com.lightbend.akka.management" %% "akka-management" % AkkaManagementVersion,
   "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % AkkaHttpVersion,
   "com.lightbend.akka.management" %% "akka-management-cluster-http" % AkkaManagementVersion,
   "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % AkkaManagementVersion,
+  "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % AkkaManagementVersion,
   "com.typesafe.akka" %% "akka-discovery" % AkkaVersion,
-
+  
   // Common dependencies for logging and testing
   "com.typesafe.akka" %% "akka-slf4j" % AkkaVersion,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.scalatest" %% "scalatest" % "3.1.2" % Test,
-
+  
   // 2. Using gRPC and/or protobuf
   "com.typesafe.akka" %% "akka-http2-support" % AkkaHttpVersion,
-
+  
   // 3. Using Akka Persistence
   "com.typesafe.akka" %% "akka-persistence-typed" % AkkaVersion,
   "com.typesafe.akka" %% "akka-serialization-jackson" % AkkaVersion,
   "com.typesafe.akka" %% "akka-persistence-cassandra" % AkkaPersistenceCassandraVersion,
   "com.typesafe.akka" %% "akka-persistence-testkit" % AkkaVersion % Test,
-
+  
   // 4. Querying or projecting data from Akka Persistence
   "com.typesafe.akka" %% "akka-persistence-query" % AkkaVersion,
   "com.lightbend.akka" %% "akka-projection-eventsourced" % AkkaProjectionVersion,
   "com.lightbend.akka" %% "akka-projection-cassandra" % AkkaProjectionVersion,
   "com.typesafe.akka" %% "akka-stream-kafka" % AlpakkaKafkaVersion,
   "com.lightbend.akka" %% "akka-projection-testkit" % AkkaProjectionVersion % Test,
-)
+  )
+  
+  
+enablePlugins(JavaAppPackaging, DockerPlugin)
+mainClass in Compile := Some("shopping.cart.Main")
+dockerBaseImage := "adoptopenjdk:11-jre-hotspot"
+dockerExposedPorts ++= Seq(8101, 9101)
 
+ThisBuild / dynverSeparator := "-"
+dockerUpdateLatest := true
+
+dockerUsername := sys.props.get("docker.username")
+dockerRepository := sys.props.get("docker.registry")
