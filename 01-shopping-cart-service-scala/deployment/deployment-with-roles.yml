@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cartapp
+  name: cartapp-roles-foo
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cartapp
+  template:
+    metadata:
+      labels:
+        app: cartapp
+    spec:
+      containers:
+      - name: cartapp
+        image: ignasi35/shopping-cart-service-scala:latest
+        env:
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=kubernetes.conf -Dakka.cluster.roles.0=foo"
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: management
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: management
+        ports:
+        - name: management
+          containerPort: 9101
+          protocol: TCP
+        - name: http
+          containerPort: 8101
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 0.5
+            memory: 1024Mi
+          requests:
+            cpu: 0.5
+            memory: 1024Mi
