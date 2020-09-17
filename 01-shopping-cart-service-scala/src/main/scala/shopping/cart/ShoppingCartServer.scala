@@ -21,9 +21,9 @@ object ShoppingCartServer {
 
     val service: HttpRequest => Future[HttpResponse] =
       ServiceHandler.concatOrNotFound(
-        proto.ShoppingCartServiceHandler.partial(new ShoppingCartServiceImpl),
+        proto.ShoppingCartServiceHandler.partial(new ShoppingCartServiceImpl(system)),
         // ServerReflection enabled to support grpcurl without import-path and proto parameters
-        ServerReflection.partial(List(proto.ShoppingCartService))) // <1>
+        ServerReflection.partial(List(proto.ShoppingCartService)))
 
     val bound =
       Http().newServerAt(interface, port).bind(service).map(_.addToCoordinatedShutdown(3.seconds)) // <2>

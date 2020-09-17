@@ -20,6 +20,7 @@ kubectl config use-context minikube
 ```
 kubectl apply -f deployment/rbac.yml
 kubectl apply -f deployment/deployment.yml
+kubectl apply -f deployment/deployment-with-roles.yml
 kubectl apply -f deployment/service.yml
 ```
 
