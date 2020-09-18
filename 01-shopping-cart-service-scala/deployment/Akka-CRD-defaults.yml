@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: AkkaCluster
+metadata:
+  labels:
+    app: todo
+  name: todo
+  namespace: default
+spec:
+## The replicas value is no longer in the spec root and, instead, 
+## a new field `nodesets` (below) is introduced.
+##  replicas: 3
+  selector:
+    matchLabels:
+      app: todo
+  template:
+    metadata:
+      labels:
+        app: todo
+    spec:
+      containers:
+      - name: todo
+        image: no-registry/no-image:latest
+        env:
+            ## We should recommend injecting ports as ENV_VARS (instead of keeping values in sync)
+            ## with that recommendation users wouldn't even need to add all these ENV_VARS or the 
+            ## ports below since those would be default values of the spec.
+            - name: PORT_HTTP
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.template.spec.containers[...]...
+            - name: PORT_HTTPS
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.template.spec.containers[...]...
+            - name: PORT_MANAGEMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.template.spec.containers[...]...
+            - name: PORT_AKKA_REMOTE
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.template.spec.containers[...]...
+        ## Health checks would be default values. Nothing to add by 
+        ## the user if they use default Akka Management.
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: management
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: management
+        ports:
+        - name: remote
+          containerPort: 2552
+          protocol: TCP
+        - name: management
+          containerPort: 9101
+          protocol: TCP
+        - name: http
+          containerPort: 8101
+          protocol: TCP
+        - name: https
+          containerPort: 8143
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 0.5
+            memory: 1024Mi
+          requests:
+            cpu: 0.5
+            memory: 1024Mi
+  ## Each `nodeset` must have a name and a number of replicas. Then, the spec of the 
+  ## nodeset follows the spec of a Deployment and it'll be overlaid on top of the 
+  ## spec.template above.
+  nodesets:
+    - name: default
+      replicas: 3
+      spec:
+        containers:
+        - env:
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=kubernetes.conf"
+    - name: projections
+      replicas: 3
+      metadata:
+        labels:
+          roles: projections
+      spec:
+        containers:
+        - env:
+          - name: JAVA_OPTS
+            value: "-Dconfig.resource=kubernetes.conf -Dakka.cluster.roles.0=projections"

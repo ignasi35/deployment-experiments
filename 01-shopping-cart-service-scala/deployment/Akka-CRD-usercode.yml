@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: AkkaCluster
+metadata:
+  labels:
+    app: cartapp
+  name: cartapp
+  namespace: my-namespace
+spec:
+## The replicas value is no longer in the spec root and, instead, 
+## a new field `nodesets` (below) is introduced.
+##  replicas: 3
+  selector:
+    matchLabels:
+      app: cartapp
+  template:
+    metadata:
+      labels:
+        app: cartapp
+    spec:
+      containers:
+      - name: cartapp
+        image: ignasi35/shopping-cart-service-scala:latest
+  ## Each `nodeset` must have a name and a number of replicas. Then, the spec of the 
+  ## nodeset follows the spec of a Deployment and it'll be overlaid on top of the 
+  ## spec.template above.
+  nodesets:
+    - name: cartapp-node
+      replicas: 3
+      spec:
+        containers:
+        - env:
+            - name: JAVA_OPTS
+              value: "-Dconfig.resource=kubernetes.conf"
+    - name: cartapp-projections-node
+      replicas: 3
+      metadata:
+        labels:
+          roles: projections
+      spec:
+        containers:
+        - env:
+          - name: JAVA_OPTS
+            value: "-Dconfig.resource=kubernetes.conf -Dakka.cluster.roles.0=projections"
