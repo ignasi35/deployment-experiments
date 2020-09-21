@@ -9,10 +9,10 @@ spec:
 ## The replicas value is no longer in the spec root and, instead, 
 ## a new field `nodesets` (below) is introduced.
 ##  replicas: 3
-  selector:
+  selector: ### This is use by the replicaset to locate and count the running pods
     matchLabels:
       app: cartapp
-  template:
+  template: ### used to create new pods.
     metadata:
       labels:
         app: cartapp
